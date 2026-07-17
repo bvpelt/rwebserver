@@ -148,3 +148,93 @@ Percentage of the requests served within a certain time (ms)
   99%    108
  100%    110 (longest request)
 ```
+
+After using the hyper-server-fase
+
+```bash
+$ RUST_LOG=debug target/release/hyper-server
+Master Process: Spawning server across 14 cores...
+ 2026-07-17T18:35:47.148Z INFO  hyper_server > Master Process: Spawning server across 14 cores...
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #3 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #8 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #1 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #2 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #5 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #7 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #0 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #4 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #9 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #11 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #6 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #10 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #12 is online and listening
+ 2026-07-17T18:35:47.149Z INFO  hyper_server > Worker thread for Core #13 is online and listening
+ 2026-07-17T18:36:02.044Z INFO  hyper_server > [Thread ThreadId(8)] processed /data successfully
+...
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(4)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(13)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(13)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(6)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(7)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(8)] processed /data successfully
+ 2026-07-17T18:36:03.072Z INFO  hyper_server > [Thread ThreadId(2)] processed /data successfully
+
+$ ab -n 1000 -c 100 http://localhost:8080/data
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8080
+
+Document Path:          /data
+Document Length:        4 bytes
+
+Concurrency Level:      100
+Time taken for tests:   1.130 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      79000 bytes
+HTML transferred:       4000 bytes
+Requests per second:    884.61 [#/sec] (mean)
+Time per request:       113.044 [ms] (mean)
+Time per request:       1.130 [ms] (mean, across all concurrent requests)
+Transfer rate:          68.25 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   0.8      0       4
+Processing:   100  102   0.9    101     106
+Waiting:      100  101   0.6    101     104
+Total:        100  102   1.4    102     108
+WARNING: The median and mean for the initial connection time are not within a normal deviation
+        These results are probably not that reliable.
+WARNING: The median and mean for the processing time are not within a normal deviation
+        These results are probably not that reliable.
+
+Percentage of the requests served within a certain time (ms)
+  50%    102
+  66%    102
+  75%    103
+  80%    103
+  90%    104
+  95%    105
+  98%    106
+  99%    106
+ 100%    108 (longest request)
+```

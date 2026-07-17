@@ -8,13 +8,14 @@ Using https://www.youtube.com/playlist?list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH
 - [Data serialisation, deserialisation and parsing](https://www.youtube.com/watch?v=2s9YDff5KNo&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=4)
 - [Application level protocols](https://www.youtube.com/watch?v=148TzBtLXSc&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=5)
 - [HTTP](https://www.youtube.com/watch?v=t5YvWzZPtkY&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=6)
+- [Asynchronic programming](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
 
 
 ## Serde
 Serde is the de-facto standard way of (de)serialisation of data in rust
 
 
-https://youtu.be/2s9YDff5KNo?si=F7RQ7DP7ZlZqo-zR&t=383
+https://youtu.be/wyOv6-LNsFQ?si=0Uo7BGw7Bv6nXvRF&t=8
 
 ## Application level protocols
 There are several protocols
