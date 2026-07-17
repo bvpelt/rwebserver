@@ -1,0 +1,13 @@
+[package]
+name = "hyper-server"
+version = "0.1.0"
+edition = "2021"
+authors = ["bart van pelt <brtvnplt@gmail.com>"]
+
+[dependencies]
+hyper = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+http-body-util = "0.1"
+log = "0.4.33" 
+pretty_env_logger = "0.5.0"

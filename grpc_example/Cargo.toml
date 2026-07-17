@@ -2,6 +2,7 @@
 name = "grpc_example"
 version = "0.1.0"
 edition = "2021"  # Tonic requires 2018 or 2021
+authors = ["bart van pelt <brtvnplt@gmail.com>"]
 
 [dependencies]
 dotenvy = "0.15"
