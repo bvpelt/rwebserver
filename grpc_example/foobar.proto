@@ -3,9 +3,39 @@ syntax = "proto3";
 package foobar;
 
 service FooBarService {
+    // 1. Public Authentication Endpoint
+    rpc login(LoginRequest) returns (LoginResponse);
+
+    // 2. Protected Business Endpoints (Enforced via Metadata Interceptors)
     rpc record_cab_location(CabLocationRequest) returns (CabLocationResponse);
     rpc get_cabs(GetCabRequest) returns (GetCabResponse);
+
+    // 3. Administrative Endpoint (Enforced via Metadata Interceptors + Role Check)
+    rpc stop_server(StopServerRequest) returns (StopServerResponse);
 }
+
+
+// --- Security Messages ---
+
+message LoginRequest {
+    string username = 1;
+    string password = 2; // In production, consider using OAuth/OIDC tokens instead of raw credentials
+}
+
+message LoginResponse {
+    string token = 1;       // A JWT or secure session token
+    int64 expires_at = 2;   // Epoch timestamp for token expiration
+}
+
+message StopServerRequest {
+    string reason = 1;      // Audit log tracing reason
+}
+
+message StopServerResponse {
+    bool success = 1;
+}
+
+
 
 message CabLocationRequest {
     string name = 1;
