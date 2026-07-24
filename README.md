@@ -9,6 +9,7 @@ Using https://www.youtube.com/playlist?list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH
 - [Application level protocols](https://www.youtube.com/watch?v=148TzBtLXSc&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=5)
 - [HTTP](https://www.youtube.com/watch?v=t5YvWzZPtkY&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=6)
 - [Asynchronic programming / futures example](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
+- [Asynchronic programming / futures chaining](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
 
 
 ## Serde
