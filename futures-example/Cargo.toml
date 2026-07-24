@@ -1,0 +1,12 @@
+[package]
+name = "futures-example"
+version = "0.1.0"
+edition = "2021"  # Use 2021 for stability with tokio/futures
+authors = ["bart van pelt <brtvnplt@gmail.com>"]
+
+[dependencies]
+futures = "0.3.33"
+tokio = { version = "1", features = ["full"] }  # Replaces futures-cpupool
+log = "0.4.33" 
+pretty_env_logger = "0.5.0"
+dotenvy = "0.15.7"
