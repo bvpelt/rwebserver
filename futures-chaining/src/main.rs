@@ -1,8 +1,9 @@
-use futures::future::join;
 use futures_chaining::AppConfig;
 use log::{info, warn};
 use rand::Rng;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
+use tokio::sync::Mutex;
 
 #[tokio::main]
 async fn main() {
@@ -13,41 +14,56 @@ async fn main() {
     info!("Launching futures-example version: {}", appconfig.version);
 
     let start = Instant::now();
-    let timeout_duration = Duration::from_secs(3);
+    let timeout = tokio::time::sleep(Duration::from_secs(3));
 
-    // FIX 1: Use tokio::spawn and tokio::time::sleep for true async cancellation
-    let one = tokio::spawn(async move {
-        let d = rand::thread_rng().gen_range(1..5);
-        tokio::time::sleep(Duration::from_secs(d)).await;
-        ("player_one", start.elapsed())
-    });
+    // Shared storage for results
+    let results = Arc::new(Mutex::new((None, None)));
 
-    let two = tokio::spawn(async move {
-        let d = rand::thread_rng().gen_range(1..5);
-        tokio::time::sleep(Duration::from_secs(d)).await;
-        ("player_two", start.elapsed())
-    });
+    let one = {
+        let results = results.clone();
+        tokio::task::spawn_blocking(move || {
+            let d = rand::thread_rng().gen_range(1..5);
+            std::thread::sleep(Duration::from_secs(d));
+            let duration = start.elapsed();
+            let mut r = results.blocking_lock();
+            r.0 = Some(("player_one", duration));
+            ("player_one", duration)
+        })
+    };
 
-    let both = join(one, two);
+    let two = {
+        let results = results.clone();
+        tokio::task::spawn_blocking(move || {
+            let d = rand::thread_rng().gen_range(1..5);
+            std::thread::sleep(Duration::from_secs(d));
+            let duration = start.elapsed();
+            let mut r = results.blocking_lock();
+            r.1 = Some(("player_two", duration));
+            ("player_two", duration)
+        })
+    };
 
-    // FIX 2: Use tokio::time::timeout instead of select! for explicit timeouts
-    match tokio::time::timeout(timeout_duration, both).await {
-        Ok((result1, result2)) => {
-            // This block executes ONLY if both players finish before 3 seconds
-            let (p1, d1) = result1.unwrap();
-            let (p2, d2) = result2.unwrap();
-            info!("Player {:?} took {:?}", p1, d1);
-            info!("Player {:?} took {:?}", p2, d2);
-            if d1 < d2 {
-                info!("{} won (took: {:?} vs {:?})", p1, d1, d2);
-            } else {
-                info!("{} won (took: {:?} vs {:?})", p2, d2, d1);
-            }
-        }
-        Err(_) => {
-            // This block strictly executes if 3 seconds is reached.
-            // Because we used tokio::spawn, the pending player tasks are safely aborted.
-            warn!("Timed out! Game cancelled.");
-        }
+    // FIX: Race all three conditions independently
+    tokio::select! {
+        // Condition 1: Player One finishes first
+        Ok((p1, d1)) = one => {
+            info!("{} won! (took: {:?})", p1, d1);
+        },
+
+        // Condition 2: Player Two finishes first
+        Ok((p2, d2)) = two => {
+            info!("{} won! (took: {:?})", p2, d2);
+        },
+
+        // Condition 3: The 3-second timeout is reached before EITHER finishes
+        _ = timeout => {
+            let r = results.lock().await;
+            warn!("Timed out! Nobody finished in under 3 seconds.");
+            warn!("Current status - {}: {:?}, {}: {:?}",
+                r.0.as_ref().map_or("player_one", |(p, _)| *p),
+                r.0.as_ref().map_or(Duration::from_secs(0), |(_, d)| *d),
+                r.1.as_ref().map_or("player_two", |(p, _)| *p),
+                r.1.as_ref().map_or(Duration::from_secs(0), |(_, d)| *d));
+        },
     }
 }
