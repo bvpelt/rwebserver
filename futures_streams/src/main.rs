@@ -1,18 +1,17 @@
-use futures_streams::AppConfig;
-use log::info;
-
-// 1. Bring in StreamExt to get access to `.for_each()`
 use futures::stream::{Stream, StreamExt};
+use futures_streams::AppConfig;
+use log::{debug, info};
 use rand::{Rng, thread_rng};
 use std::pin::Pin;
-use std::task::{Context, Poll}; // 2. Use the standard library's Poll and Context
-use std::thread;
+use std::task::{Context, Poll};
 use std::time::Duration;
+use tokio::time::{Sleep, sleep};
 
-#[derive(Debug)]
 struct CollatzStream {
     current: u64,
     end: u64,
+    // Store an active timer future directly inside the stream struct
+    delay: Option<Pin<Box<Sleep>>>,
 }
 
 impl CollatzStream {
@@ -20,38 +19,52 @@ impl CollatzStream {
         CollatzStream {
             current: start,
             end: 1,
+            delay: None,
         }
     }
 }
 
 impl Stream for CollatzStream {
-    type Item = u64; // 3. The Error type is removed in modern Stream
+    type Item = u64;
 
-    // 4. Update the signature to use Pin and Context
-    fn poll_next(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        // 5. Update to rand 0.8 range syntax
-        let d = thread_rng().gen_range(1..5);
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        // 1. If we don't have an active delay timer, create one
+        if self.delay.is_none() {
+            let d = thread_rng().gen_range(1..5);
+            self.delay = Some(Box::pin(sleep(Duration::from_secs(d))));
+            debug!("delay: {:?}", self.delay);
+        }
 
-        // Note: std::thread::sleep blocks the async executor thread.
-        // In a real high-performance app, you would use async timers,
-        // but this works perfectly for learning manual Stream implementation.
-        thread::sleep(Duration::from_secs(d));
+        // 2. Poll the inner delay timer asynchronously!
+        if let Some(delay) = &mut self.delay {
+            // Asynchronously poll the Tokio sleep timer
+            if delay.as_mut().poll(cx).is_pending() {
+                debug!("pending");
+                // Timer is still counting down; yield execution back to Tokio worker
+                return Poll::Pending;
+            }
+        }
 
+        // 3. Timer has finished! Reset delay so a new duration is picked next iteration
+        self.delay = None;
+
+        info!("current: {}", self.current);
+
+        // 4. Calculate the Collatz step
         if self.current % 2 == 0 {
-            self.current = self.current / 2;
+            self.current /= 2;
         } else {
             self.current = 3 * self.current + 1;
         }
 
         if self.current == self.end {
-            Poll::Ready(None) // stream is finished when it reaches 1
+            Poll::Ready(None)
         } else {
             Poll::Ready(Some(self.current))
         }
     }
 }
 
-// 6. Use the Tokio runtime and async main
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init_timed();
@@ -62,10 +75,9 @@ async fn main() {
 
     let stream = CollatzStream::new(10);
 
-    // 7. Modern for_each takes an async closure that returns ()
     stream
         .for_each(|num| async move {
             info!("{}", num);
         })
-        .await; // 8. Replace .wait() with .await
+        .await;
 }
