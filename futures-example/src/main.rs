@@ -20,12 +20,14 @@ fn check_prime(n: u64) -> bool {
     true
 }
 
+// Allocates memory on the heap
 fn check_prime_boxed(
     n: u64,
 ) -> Pin<Box<dyn std::future::Future<Output = Result<bool, io::Error>>>> {
     Box::pin(futures::future::ok(check_prime(n)))
 }
 
+// No allocation is needed in advance
 fn check_prime_impl_trait(n: u64) -> impl std::future::Future<Output = Result<bool, io::Error>> {
     futures::future::ok(check_prime(n))
 }

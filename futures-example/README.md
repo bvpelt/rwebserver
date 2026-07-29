@@ -8,6 +8,11 @@
         - Ok the result is available
         - Error case something went wrong
 
+*Executing threads*
+- in the current thread, blocking current thread
+- in a thread pool, threads are independend
+- in an event loop
+
 
 ## Running
 
