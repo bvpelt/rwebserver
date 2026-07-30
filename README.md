@@ -13,6 +13,7 @@ Using https://www.youtube.com/playlist?list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH
 - [Asynchronic programming / futures streams](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
 - [Asynchronic programming / futures ping_pong](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
 - [Asynchronic programming / futures bilock](https://www.youtube.com/watch?v=wyOv6-LNsFQ&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=7)
+- [Security](https://www.youtube.com/watch?v=F6l_eK1ZEKI&list=PLTgRMOcmRb3M2fbwAgclKI0yt4uVchwZH&index=8)
 
 ## Serde
 Serde is the de-facto standard way of (de)serialisation of data in rust
